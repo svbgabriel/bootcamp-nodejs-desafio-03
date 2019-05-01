@@ -2,7 +2,7 @@ const Ad = require('../models/Ad')
 
 class AdController {
   async index (req, res) {
-    const filters = {}
+    const filters = { purchasedBy: null }
 
     if (req.query.price_min || req.query.price_max) {
       filters.price = {}
@@ -54,6 +54,20 @@ class AdController {
     await Ad.findByIdAndDelete(req.params.id)
 
     return res.send()
+  }
+
+  async sell (req, res) {
+    const { purchaseId } = req.body
+
+    const ad = await Ad.findByIdAndUpdate(
+      req.params.id,
+      { $set: { purchasedBy: purchaseId } },
+      {
+        new: true
+      }
+    )
+
+    return res.json(ad)
   }
 }
 
